@@ -152,6 +152,18 @@ def save_history(history_keras,path_hist):
         
     f1.close()   
 
+def two_elements_permutation(list,length,pos1,pos2):
+    new_list=[]
+    for i in range(length):
+        if(i==pos1):
+            new_list.append(list[pos2])
+        else:
+            if(i==pos2):
+                new_list.append(list[pos1])
+            else:
+                new_list.append(list[i])
+    
+    return new_list
 
 
 ########## FUNCTIONS ##########

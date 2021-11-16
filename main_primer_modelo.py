@@ -26,12 +26,12 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-filex = '/Users/user/Desktop/more_data_HP/inv_plus_cyc/ENERGIES_4atoms_HP_cycres.csv'
-filey = '/Users/user/Desktop/more_data_HP/inv_plus_cyc/EIGENVALUES_4atoms_HP_cycres.csv'
+filex = '/Users/user/Desktop/more_data_HR/alt_6atoms/ENERGIES_6atoms_HR_invres_alt_1.csv'
+filey = '/Users/user/Desktop/more_data_HR/alt_6atoms/EIGENVALUES_6atoms_HR_invres_alt_1.csv'
 
 J=1
-Ne = 4 #Number of atoms
-rigid = False #Type of hamiltonian. True: rigid; False: periodic
+Ne = 6 #Number of atoms
+rigid = True #Type of hamiltonian. True: rigid; False: periodic
 
 ntrain = 10000
 nvalidation = 5000
@@ -80,7 +80,7 @@ score_va = model.evaluate(xva, yva, verbose=0)
 score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-file_name_save_NN = '/Users/user/Desktop/HP_models_more_data/inv_plus_cyc/Model_4atoms_HP_cycres'
+file_name_save_NN = '/Users/user/Desktop/HR_models_more_data/Model_6atoms_HR_invres_alt_1'
 model.save(file_name_save_NN)
 
 #Save Description
@@ -100,7 +100,7 @@ scm.save_history(r,file_hist)
 
 scm.GraphData_history([[n_epochs, r.history['loss']],
                [n_epochs,  r.history['val_loss']]],['r', 'b'], 
-              ['Train', 'Validation'],'HP, 4 atoms, cyclic restriction',file_graph, Axx='Epochs', Axy='Loss')
+              ['Train', 'Validation'],'HR, 6 atoms, inv. restriction (alt. 1)',file_graph, Axx='Epochs', Axy='Loss')
 
 ########## NEURAL NETWORK ##########
 ######################################################
