@@ -20,17 +20,17 @@ import subroutines_chain_model as scm
 
 #MODELS
 #model_nores=models.load_model('/Users/user/Desktop/HP_models_more_data/Model_3atoms_HR_nores')
-model_invres=models.load_model('/Users/user/Desktop/HR_models_more_data/Model_6atoms_HR_invres_alt_1')
+model_invres=models.load_model('/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/HR_models_more_data/sigmoid_hidden/Model_3atoms_HR_invres')
 #model_res1=models.load_model('/Users/user/Desktop/HP_models_more_data/Model_3atoms_HP_cycres')
 #model_res2=models.load_model('/Users/user/Desktop/HP_models_more_data/inv_plus_cyc/Model_4atoms_HP_allres')
 
-filex = '/Users/user/Desktop/more_data_HR/alt_6atoms/ENERGIES_6atoms_HR_invres_alt_1.csv'
-filey = '/Users/user/Desktop/more_data_HR/alt_6atoms/EIGENVALUES_6atoms_HR_invres_alt_1.csv'
+filex = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/more_data_HR/ENERGIES_3atoms_HR_invres.csv'
+filey = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/more_data_HR/EIGENVALUES_3atoms_HR_invres.csv'
 energies,eigenvalues = scm.read_data(filex,filey)
 
 J=1
 rigid = True #Type of hamiltonian. True: rigid; False: periodic
-Ne = 6 #Number of atoms
+Ne = 3 #Number of atoms
 if(rigid): #For the plot's title
     H_name = 'HR'
 else:
@@ -71,7 +71,7 @@ else:
 if(plot_separated_energies):
     for i in range(Ne):
 
-        filename_data='/Users/user/Desktop/prediction_HR_more_data/6 atoms/alt1/energy'+str(i+1)+'_'+H_name+'_'+str(Ne)+'atoms_'+data_name+'.png'
+        filename_data='/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/prediction_HR_more_data/3 atoms/sigmoid_hidden/energy'+str(i+1)+'_'+H_name+'_'+str(Ne)+'atoms_'+data_name+'.png'
         Title = H_name+', '+str(Ne)+' atoms'
 
         ndata=1000
