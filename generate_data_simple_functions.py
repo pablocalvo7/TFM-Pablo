@@ -2,25 +2,10 @@
 ########## IMPORT PACKAGES ##########
 import numpy as np
 import pandas as pd
-import subroutines_chain_model as scm
+import subroutines as scm
 ########## IMPORT PACKAGES ##########
 ######################################################
 
-
-######################################################
-########## FUNCTIONS ##########
-
-def function_1(list_x,Ne):
-    list_function=[]
-    for i in range(Ne):
-        x_pow = [j ** (i+1) for j in list_x]
-        list_function.append(sum(x_pow))
-    
-    return list_function
-
-
-########## FUNCTIONS ##########
-######################################################
 
 
 ######################################################
@@ -32,12 +17,14 @@ F1 = True
 #Data restrictions
 perm_2values = False
 
-#For the plot's title
+#For the file's title
 if(perm_2values):
     res_name = '12'
 else:
     res_name = 'nores'
 
+if(F1):
+    func_name = 'F1'
 ########## SET TYPE OF DATA ##########
 ######################################################
 
@@ -58,7 +45,7 @@ for i in range(Nsamples):
     #End data restrictions
 
     if(F1):
-        func = function_1(list_x,Ne)
+        func = scm.function_1(list_x,Ne)
     
     x.append(list_x)
     y.append(func)  
@@ -75,7 +62,7 @@ dfx = pd.DataFrame(x)
 dfy = pd.DataFrame(y)
 
 
-dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/x_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
-dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/F_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
 ########## SAVE DATA ########## 
 ######################################################

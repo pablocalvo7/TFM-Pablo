@@ -16,6 +16,9 @@ import os
 
 ######################################################
 ########## FUNCTIONS ##########
+
+#CHAIN MODEL
+
 def autoenergies_chain_Natoms(e,N,J,rigid): #periodic hamiltonian
     A=[]
     for i in range(N):
@@ -57,7 +60,7 @@ def normalization(energies, eigenvalues, Ne, J, rigid): #NORMALIZATION OF EIGENV
     min_eig = autoenergies_chain_Natoms(lowest,Ne,J,rigid)[0]
     max_eig = autoenergies_chain_Natoms(highest,Ne,J,rigid)[Ne-1]
     eigen_norm=(eigenvalues-min_eig)/(max_eig-min_eig)
-    x=eigen_norm; y=energies #NN input: eigenvalues; NN output: energies
+    x=eigen_norm; y=energies #NN input: eigenvalues; NN output: energies (inverse problem)
 
     return x,y
 
@@ -164,6 +167,26 @@ def two_elements_permutation(list,length,pos1,pos2):
                 new_list.append(list[i])
     
     return new_list
+
+#SIMPLE FUNCTIONS
+
+def function_1(list_x,Ne):
+    list_function=[]
+    for i in range(Ne):
+        x_pow = [j ** (i+1) for j in list_x]
+        list_function.append(sum(x_pow))
+    
+    return list_function
+
+
+def normalization_function_1(F,Ne): #NORMALIZATION OF F DATA [0,1)
+
+    #if we generate values 0<x_i<1
+    min = 0
+    max= Ne #maximum value of any component F_j
+    F_norm = (F-min)/(max-min)
+
+    return F_norm
 
 
 ########## FUNCTIONS ##########
