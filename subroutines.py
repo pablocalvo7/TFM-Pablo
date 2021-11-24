@@ -115,7 +115,8 @@ def GraphData_prediction(datalist, labellist, Title, filename_data,\
     #plt.axis([left, right, bottom, top])
     plt.xlabel(Axx,fontsize=25,fontname='Gill Sans')
     plt.ylabel(Axy,fontsize=25,fontname='Gill Sans')
-    #plt.legend(['NN=QM','NN no restricted','NN all restricted'],fontsize=12.8,loc="upper left")
+    if ngraph != 1:
+        plt.legend(loc='best')
     plt.title(Title, fontsize=30,fontname= 'Gill Sans')
 
     ax.set_xlim([0.0,1.0])

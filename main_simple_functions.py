@@ -16,8 +16,10 @@ import subroutines as scm
 
 ######################################################
 ########## HYPERPARAMETERS ##########
-nneurons = 50
-nhidden = 1
+hyp_test = True #If we are testing the hyperparameters, so we can vary them freely
+
+nneurons = 10
+nhidden = 2
 epochs = 80
 minib_size = 10
 eta = 0.01
@@ -43,8 +45,8 @@ else:
 if(F1):
     func_name = 'F1'
 
-ntrain = 5000
-nvalidation = 1000
+ntrain = 10000
+nvalidation = 5000
 ndata = ntrain + nvalidation
 x,F = scm.read_data(filex,filey)
 
@@ -97,7 +99,16 @@ score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
 directory = '/Users/user/Desktop/TFM/6. Simple functions/models/'
-file_name = 'Model_'+func_name+'_'+str(Ne)+'values_'+res_name
+if(inverse_problem):
+    if(hyp_test):
+        file_name = 'Model(hyp_test)_'+func_name+'_'+str(Ne)+'values_'+res_name
+    else:
+        file_name = 'Model_'+func_name+'_'+str(Ne)+'values_'+res_name
+else:
+    if(hyp_test):
+        file_name = 'Model(hyp_test)_direct_'+func_name+'_'+str(Ne)+'values_'+res_name
+    else:
+        file_name = 'Model_direct_'+func_name+'_'+str(Ne)+'values_'+res_name
 model.save(directory+file_name)
 
 #Save Description
