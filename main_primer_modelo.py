@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import subroutines_chain_model as scm
+import subroutines as scm
 ########## IMPORT PACKAGES ##########
 ######################################################
 
