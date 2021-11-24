@@ -27,21 +27,24 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_2values_nores.csv'
-filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_2values_nores.csv'
+filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
+filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
 
 Ne = 2 #Number of x values --> F_j(x1,...xN)
-perm_2values = False
+perm_2values = True
 inverse_problem = True
+F1 = True
 
-#For the plot's title
+#For the file and plot's title
 if(perm_2values):
     res_name = '12'
 else:
     res_name = 'nores'
+if(F1):
+    func_name = 'F1'
 
-ntrain = 10000
-nvalidation = 5000
+ntrain = 5000
+nvalidation = 1000
 ndata = ntrain + nvalidation
 x,F = scm.read_data(filex,filey)
 
@@ -49,15 +52,15 @@ x,F = scm.read_data(filex,filey)
 F_norm = scm.normalization_function_1(F,Ne)
 
 if(inverse_problem):
-    xtr = F[0:ntrain,:]
-    xva = F[ntrain:ntrain + nvalidation, :]
+    xtr = F_norm[0:ntrain,:]
+    xva = F_norm[ntrain:ntrain + nvalidation, :]
     ytr = x[0:ntrain,:]
     yva = x[ntrain:ntrain + nvalidation, :]
 else:
-    ytr = x[0:ntrain,:]
-    yva = x[ntrain:ntrain + nvalidation, :]
-    xtr = F[0:ntrain,:]
-    xva = F[ntrain:ntrain + nvalidation, :]
+    ytr = F_norm[0:ntrain,:]
+    yva = F_norm[ntrain:ntrain + nvalidation, :]
+    xtr = x[0:ntrain,:]
+    xva = x[ntrain:ntrain + nvalidation, :]
 
 input_neurons  = xtr.shape[1]
 output_neurons = ytr.shape[1]
@@ -93,8 +96,8 @@ score_va = model.evaluate(xva, yva, verbose=0)
 score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-directory = '/Users/user/Desktop/TFM/6. Simple functions/Models/'
-file_name = 'Model_2values_nores'
+directory = '/Users/user/Desktop/TFM/6. Simple functions/models/'
+file_name = 'Model_'+func_name+'_'+str(Ne)+'values_'+res_name
 model.save(directory+file_name)
 
 #Save Description
@@ -114,7 +117,7 @@ scm.save_history(r,file_hist)
 
 scm.GraphData_history([[n_epochs, r.history['loss']],
                [n_epochs,  r.history['val_loss']]],['r', 'b'], 
-              ['Train', 'Validation'],str(Ne)+' atoms, restriction: '+res_name,file_graph, Axx='Epochs', Axy='Loss')
+              ['Train', 'Validation'],func_name+', '+str(Ne)+' atoms, restriction: '+res_name,file_graph, Axx='Epochs', Axy='Loss')
 
 ########## NEURAL NETWORK ##########
 ######################################################

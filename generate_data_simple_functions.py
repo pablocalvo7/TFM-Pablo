@@ -15,7 +15,7 @@ Ne = 2 #Number of x values --> F_j(x1,...xN)
 F1 = True
 
 #Data restrictions
-perm_2values = False
+perm_2values = True
 
 #For the file's title
 if(perm_2values):
