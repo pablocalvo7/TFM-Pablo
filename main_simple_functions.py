@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import subroutines_chain_model as scm
+import subroutines as scm
 ########## IMPORT PACKAGES ##########
 ######################################################
 
@@ -18,7 +18,7 @@ import subroutines_chain_model as scm
 ########## HYPERPARAMETERS ##########
 nneurons = 50
 nhidden = 1
-epochs = 120
+epochs = 80
 minib_size = 10
 eta = 0.01
 ########## HYPERPARAMETERS ##########
@@ -27,32 +27,37 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-filex = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/more_data_HR/ENERGIES_3atoms_HR_invres.csv'
-filey = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/more_data_HR/EIGENVALUES_3atoms_HR_invres.csv'
+filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_2values_nores.csv'
+filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_2values_nores.csv'
 
-J=1
-Ne = 3 #Number of atoms
-rigid = True #Type of hamiltonian. True: rigid; False: periodic
-inverse_problem = False
+Ne = 2 #Number of x values --> F_j(x1,...xN)
+perm_2values = False
+inverse_problem = True
+
+#For the plot's title
+if(perm_2values):
+    res_name = '12'
+else:
+    res_name = 'nores'
 
 ntrain = 10000
 nvalidation = 5000
 ndata = ntrain + nvalidation
-energies,eigenvalues=scm.read_data(filex,filey)
+x,F = scm.read_data(filex,filey)
 
 #NORMALIZATION
-x,y = scm.normalization(energies, eigenvalues, Ne, J, rigid)
+F_norm = scm.normalization_function_1(F,Ne)
 
 if(inverse_problem):
-    xtr = x[0:ntrain,:]
-    xva = x[ntrain:ntrain + nvalidation, :]
-    ytr = y[0:ntrain,:]
-    yva = y[ntrain:ntrain + nvalidation, :]
+    xtr = F[0:ntrain,:]
+    xva = F[ntrain:ntrain + nvalidation, :]
+    ytr = x[0:ntrain,:]
+    yva = x[ntrain:ntrain + nvalidation, :]
 else:
     ytr = x[0:ntrain,:]
     yva = x[ntrain:ntrain + nvalidation, :]
-    xtr = y[0:ntrain,:]
-    xva = y[ntrain:ntrain + nvalidation, :]
+    xtr = F[0:ntrain,:]
+    xva = F[ntrain:ntrain + nvalidation, :]
 
 input_neurons  = xtr.shape[1]
 output_neurons = ytr.shape[1]
@@ -88,11 +93,12 @@ score_va = model.evaluate(xva, yva, verbose=0)
 score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-file_name_save_NN = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/HR_models_more_data/sigmoid_hidden/Model_direct_3atoms_HR_invres'
-model.save(file_name_save_NN)
+directory = '/Users/user/Desktop/TFM/6. Simple functions/Models/'
+file_name = 'Model_2values_nores'
+model.save(directory+file_name)
 
 #Save Description
-file_hyper=open(file_name_save_NN+'/hyperparameters.txt',"w")
+file_hyper=open(directory+file_name+'/hyperparameters.txt',"w")
 
 description='nneurons='+str(nneurons)+'\n'+'nhidden='+str(nhidden)+'\n'+'n_train='+str(ntrain)+'\n'+'n_val='+str(nvalidation)+'\n'+'epochs='+str(epochs)+'\n'+'mbs='+str(minib_size)+'\n'+'eta='+str(eta)+'\n'+'loss='+str(loss_function)+'\n'+'optimizer='+name_opt
 
@@ -101,14 +107,14 @@ file_hyper.write(description)
 file_hyper.close()
 
 # Plot the loss and save the history
-file_hist = file_name_save_NN+'/history.txt'
-file_graph = file_name_save_NN+'/pp.png'
+file_hist = directory+file_name+'/history.txt'
+file_graph = directory+file_name+'/pp.png'
 n_epochs = np.arange(len(r.history['loss']))
 scm.save_history(r,file_hist)
 
 scm.GraphData_history([[n_epochs, r.history['loss']],
                [n_epochs,  r.history['val_loss']]],['r', 'b'], 
-              ['Train', 'Validation'],'HR, 3 atoms, inv. restriction',file_graph, Axx='Epochs', Axy='Loss')
+              ['Train', 'Validation'],str(Ne)+' atoms, restriction: '+res_name,file_graph, Axx='Epochs', Axy='Loss')
 
 ########## NEURAL NETWORK ##########
 ######################################################
