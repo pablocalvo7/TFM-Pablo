@@ -21,18 +21,18 @@ import subroutines as scm
 #MODELS
 #model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_nores')
 #model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12')
-model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model(hyp_test)_F1_2values_12')
+model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/range_test/Model_F1_2values_12')
 #model_direct = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_direct_F1_2values_nores')
 
 
-filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
-filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
+filex = '/Users/user/Desktop/TFM/6. Simple functions/data/range_test/x_F1_2values_12.csv'
+filey = '/Users/user/Desktop/TFM/6. Simple functions/data/range_test/F_F1_2values_12.csv'
 xx,F = scm.read_data(filex,filey)
 
 Ne = 2 #Number of x values --> F_j(x1,...xN)
 F1 = True
 inverse_problem = True
-hyp_test = True
+hyp_test = False #wheter the model is made for testing hyperparameters or not
 
 #For the file and plot's title
 if(F1):
@@ -40,12 +40,13 @@ if(F1):
 
 #NORMALIZATION
 F_norm = scm.normalization_function_1(F,Ne)
+xx_norm = scm.normalization_xx_range_test(xx)
 
 if(inverse_problem):
     x=F_norm
-    y=xx
+    y=xx_norm
 else:
-    x=xx
+    x=xx_norm
     y=F_norm
 
 ########## IMPORT MODELS AND DATA ##########
@@ -57,14 +58,15 @@ else:
 train = True #whether we plot training data or validation data
 plot_separated_values = False
 plot_differences = True
+plot_sum = False
 
 if(train): #for the file's title
     data_name = 'train'
 else:
     data_name = 'val'
 
-ntrain = 10000
-nval = 5000
+ntrain = 5000
+nval =1000
 
 #PREDICTIONS
 #NN_nores_y = model_nores.predict(x)
@@ -80,7 +82,7 @@ else:
 
 if(plot_separated_values):
     for i in range(Ne):
-        directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/'
+        directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/range_test/'
         if(inverse_problem):
             if(hyp_test):
                 file_name='(hyp_test)x'+str(i+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
@@ -113,7 +115,7 @@ if(plot_separated_values):
 if(plot_differences):
     for i in range(Ne):
         for j in range(i+1,Ne):
-            directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/'
+            directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/range_test/'
             if(hyp_test):
                 file_name = '(hyptest)x'+str(i+1)+'-x'+str(j+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
             else:
@@ -122,12 +124,33 @@ if(plot_differences):
 
             ndata = 1000
             y_desired = abs(y[from_num:from_num+ndata,i]-y[from_num:from_num+ndata,j])
-            y_NN_nores = abs(NN_nores_y[from_num:from_num+ndata,i]-NN_nores_y[from_num:from_num+ndata,j])
+            #y_NN_nores = abs(NN_nores_y[from_num:from_num+ndata,i]-NN_nores_y[from_num:from_num+ndata,j])
             y_NN_12 = abs(NN_12_y[from_num:from_num+ndata,i]-NN_12_y[from_num:from_num+ndata,j])
-            datalist = [[y_desired,y_NN_nores],[y_desired,y_NN_12]]
-            labellist = ['NN=desired','NN no restricted','NN 1,2 restricted']
+            datalist = [[y_desired,y_NN_12]]
+            labellist = ['NN=desired','NN 1,2 restricted']
             Axx = r'$|x_'+str(i+1)+r' - x_'+str(j+1)+' |$ (desired)'
             Axy = r'$|x_'+str(i+1)+r' - x_'+str(j+1)+' |$ (NN)'
+
+            scm.GraphData_prediction(datalist, labellist, Title, directory+file_name, Axx, Axy)
+
+if(plot_sum):
+    for i in range(Ne):
+        for j in range(i+1,Ne):
+            directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/'
+            if(hyp_test):
+                file_name = '(hyptest)x'+str(i+1)+'+x'+str(j+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
+            else:
+                file_name = 'x'+str(i+1)+'+x'+str(j+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
+            Title = func_name+', '+str(Ne)+' values'
+
+            ndata = 1000
+            y_desired = y[from_num:from_num+ndata,i]+y[from_num:from_num+ndata,j]
+            y_NN_nores = NN_nores_y[from_num:from_num+ndata,i]+NN_nores_y[from_num:from_num+ndata,j]
+            y_NN_12 = NN_12_y[from_num:from_num+ndata,i]+NN_12_y[from_num:from_num+ndata,j]
+            datalist = [[y_desired,y_NN_nores],[y_desired,y_NN_12]]
+            labellist = ['NN=desired','NN no restricted','NN 1,2 restricted']
+            Axx = r'$x_'+str(i+1)+r' + x_'+str(j+1)+' $ (desired)'
+            Axy = r'$x_'+str(i+1)+r' + x_'+str(j+1)+' $ (NN)'
 
             scm.GraphData_prediction(datalist, labellist, Title, directory+file_name, Axx, Axy)
 

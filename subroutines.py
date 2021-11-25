@@ -182,12 +182,22 @@ def function_1(list_x,Ne):
 
 def normalization_function_1(F,Ne): #NORMALIZATION OF F DATA [0,1)
 
-    #if we generate values 0<x_i<1
-    min = 0
+    #if we generate values -1<x_i<1
+    min = -Ne
     max= Ne #maximum value of any component F_j
     F_norm = (F-min)/(max-min)
 
     return F_norm
+
+def normalization_xx_range_test(xx): #NORMALIZATION OF F DATA [0,1)
+
+    #if we generate values -1<x_i<1
+    min = -1
+    max= 1 #maximum value of any component F_j
+    xx_norm = (xx-min)/(max-min)
+
+    return xx_norm
+
 
 
 ########## FUNCTIONS ##########

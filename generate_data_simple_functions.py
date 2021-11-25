@@ -36,7 +36,11 @@ y=[] #Output data
 
 for i in range(Nsamples):
     print('Nsample:',i)
-    list_x = np.random.rand(Ne)
+    #list_x = np.random.rand(Ne)
+    #PRUEBA
+    list_x=[]
+    for k in range(Ne):
+        list_x.append(np.random.uniform(-1,1))
 
     #Data estrictions
     if(perm_2values):
@@ -62,7 +66,11 @@ dfx = pd.DataFrame(x)
 dfy = pd.DataFrame(y)
 
 
-dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
-dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+#dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+#dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+
+#PRUEBA
+dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/range_test/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/range_test/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
 ########## SAVE DATA ########## 
 ######################################################
