@@ -16,11 +16,11 @@ import subroutines as scm
 
 ######################################################
 ########## HYPERPARAMETERS ##########
-hyp_test = False #If we are testing the hyperparameters, so we can vary them freely
+hyp_test = True #If we are testing the hyperparameters, so we can vary them freely
 
-nneurons = 50
-nhidden = 1
-epochs = 80
+nneurons = 25
+nhidden = 2
+epochs = 100
 minib_size = 10
 eta = 0.01
 ########## HYPERPARAMETERS ##########
@@ -29,8 +29,8 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-filex = '/Users/user/Desktop/TFM/6. Simple functions/data/range_test/x_F1_2values_12.csv'
-filey = '/Users/user/Desktop/TFM/6. Simple functions/data/range_test/F_F1_2values_12.csv'
+filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
+filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
 
 Ne = 2 #Number of x values --> F_j(x1,...xN)
 perm_2values = True
@@ -45,25 +45,25 @@ else:
 if(F1):
     func_name = 'F1'
 
-ntrain = 5000
+ntrain = 17000
 nvalidation = 1000
 ndata = ntrain + nvalidation
 x,F = scm.read_data(filex,filey)
 
 #NORMALIZATION
 F_norm = scm.normalization_function_1(F,Ne)
-x_norm = scm.normalization_xx_range_test(x)
+#x_norm = scm.normalization_xx_range_test(x)
 
 if(inverse_problem):
     xtr = F_norm[0:ntrain,:]
     xva = F_norm[ntrain:ntrain + nvalidation, :]
-    ytr = x_norm[0:ntrain,:]
-    yva = x_norm[ntrain:ntrain + nvalidation, :]
+    ytr = x[0:ntrain,:]
+    yva = x[ntrain:ntrain + nvalidation, :]
 else:
     ytr = F_norm[0:ntrain,:]
     yva = F_norm[ntrain:ntrain + nvalidation, :]
-    xtr = x_norm[0:ntrain,:]
-    xva = x_norm[ntrain:ntrain + nvalidation, :]
+    xtr = x[0:ntrain,:]
+    xva = x[ntrain:ntrain + nvalidation, :]
 
 input_neurons  = xtr.shape[1]
 output_neurons = ytr.shape[1]
@@ -127,9 +127,10 @@ file_graph = directory+file_name+'/pp.png'
 n_epochs = np.arange(len(r.history['loss']))
 scm.save_history(r,file_hist)
 
+Title = func_name+', '+str(Ne)+' atoms, restriction: '+res_name
 scm.GraphData_history([[n_epochs, r.history['loss']],
                [n_epochs,  r.history['val_loss']]],['r', 'b'], 
-              ['Train', 'Validation'],func_name+', '+str(Ne)+' atoms, restriction: '+res_name,file_graph, Axx='Epochs', Axy='Loss')
+              ['Train', 'Validation'],Title ,file_graph, Axx='Epochs', Axy='Loss')
 
 ########## NEURAL NETWORK ##########
 ######################################################

@@ -21,19 +21,19 @@ import subroutines as scm
 #MODELS
 #model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_nores')
 #model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12')
-model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_nores')
+model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12_multiple/nhidden/2')
 #model_direct = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_direct_F1_2values_nores')
 
 
-filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_nores.csv'
-filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_nores.csv'
+filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
+filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
 xx,F = scm.read_data(filex,filey)
 
 Ne = 2 #Number of x values --> F_j(x1,...xN)
 F1 = True
 inverse_problem = True
-perm_2values = False
-hyp_test = False #wheter the model is made for testing hyperparameters or not
+perm_2values = True
+hyp_test = True #wheter the model is made for testing hyperparameters or not
 
 #For the file and plot's title
 if(perm_2values):
@@ -60,7 +60,7 @@ else:
 ######################################################
 ########## EVALUATE AND PLOT ##########
 train = True #whether we plot training data or validation data
-nbins = 60 #number of bins for the plot
+nbins = 50 #number of bins for the plot
 delta = 1/float(nbins) #interval x1, x2
 evaluate_output = False
 #for plot's file name and title
@@ -74,7 +74,7 @@ if(train): #for the file's title
 else:
     data_name = 'val'
 
-ntrain = 5000
+ntrain = 17000
 nval =1000
 
 #from which position of "y" we plot (depending on train or validation plotting)
@@ -83,7 +83,7 @@ if(train):
 else:
     from_num = ntrain
 
-ndata=5000
+ndata=10000
 x = x[from_num:from_num+ndata,:]
 y = y[from_num:from_num+ndata,:]
 
@@ -133,7 +133,7 @@ if(hyp_test):
     file_name = 'cost_distribution(hyp_test)_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
 else:
     file_name = 'cost_distribution_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
-Title = "Cost distribution, "+res_name+" restriction, "+ev_name
+Title = 'Cost distribution, '+res_name+' restriction, '+ev_name
 
 fig = plt.figure(figsize=(7,7))
 plt.imshow(cost_matrix,extent=[0,1,0,1])
@@ -148,12 +148,6 @@ plt.colorbar()
 plt.savefig(directory+file_name, bbox_inches='tight')
 plt.show()
 
-#DEBUG
-number_of_data = np.flip(number_of_data,axis=0)
-plt.imshow(number_of_data)
-numb_name = 'number_of_data'
-plt.savefig(directory+numb_name, bbox_inches='tight')
-plt.show()
 
 
 ########## PREDICT AND PLOT ##########
