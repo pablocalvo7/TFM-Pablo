@@ -60,8 +60,14 @@ else:
 ######################################################
 ########## EVALUATE AND PLOT ##########
 train = True #whether we plot training data or validation data
-nbins = 40 #number of bins for the plot
+nbins = 60 #number of bins for the plot
 delta = 1/float(nbins) #interval x1, x2
+evaluate_output = False
+#for plot's file name and title
+if(evaluate_output):
+    ev_name = 'output'
+else:
+    ev_name = 'input'
 
 if(train): #for the file's title
     data_name = 'train'
@@ -91,8 +97,12 @@ cost_matrix = np.zeros((nbins,nbins))
 
 #2. Fill the matrix data_groups
 for i in range(ndata):
-    k=int(y[i,1]/delta)
-    l=int(y[i,0]/delta)
+    if(evaluate_output):
+        k=int(y[i,1]/delta)
+        l=int(y[i,0]/delta)
+    else:
+        k=int(x[i,1]/delta)
+        l=int(x[i,0]/delta)
     num=int(number_of_data[k,l])
     data_x_groups[k,l,num] = x[i,:]
     data_y_groups[k,l,num] = y[i,:]
@@ -118,17 +128,31 @@ for i in range(nbins):
 
 #PLOT
 cost_matrix=np.flip(cost_matrix,axis=0)
-directory = '/Users/user/Desktop/'
-file_name = 'cost_distribution_'+func_name+'_'+res_name+'_'+data_name+'.png'
-Title = "Cost distribution, "+res_name+" restriction"
+directory = '/Users/user/Desktop/cost_distribution/'
+if(hyp_test):
+    file_name = 'cost_distribution(hyp_test)_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
+else:
+    file_name = 'cost_distribution_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
+Title = "Cost distribution, "+res_name+" restriction, "+ev_name
 
 fig = plt.figure(figsize=(7,7))
 plt.imshow(cost_matrix,extent=[0,1,0,1])
 plt.title("Cost distribution",fontsize=30,fontname= 'Gill Sans')
-plt.xlabel(r'$x_1$',fontsize=25,fontname='Gill Sans')
-plt.ylabel(r'$x_2$',fontsize=25,fontname='Gill Sans')
+if(evaluate_output):
+    plt.xlabel(r'$x_1$',fontsize=25,fontname='Gill Sans')
+    plt.ylabel(r'$x_2$',fontsize=25,fontname='Gill Sans')
+else:
+    plt.xlabel(r'$F_1$',fontsize=25,fontname='Gill Sans')
+    plt.ylabel(r'$F_2$',fontsize=25,fontname='Gill Sans')
 plt.colorbar()
 plt.savefig(directory+file_name, bbox_inches='tight')
+plt.show()
+
+#DEBUG
+number_of_data = np.flip(number_of_data,axis=0)
+plt.imshow(number_of_data)
+numb_name = 'number_of_data'
+plt.savefig(directory+numb_name, bbox_inches='tight')
 plt.show()
 
 
