@@ -17,23 +17,33 @@ import subroutines as scm
 
 ######################################################
 ########## IMPORT MODELS AND DATA ##########
+make_gap = True
+gap = 0.1
 
 #MODELS
-#model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_nores')
-#model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12')
-model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12_multiple/nhidden/2')
-#model_direct = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_direct_F1_2values_nores')
+if(make_gap):
+    model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_2values_12_gap'+str(gap))
+else:
+    #model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_nores')
+    #model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12')
+    model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12_multiple/nhidden/2')
+    #model_direct = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_direct_F1_2values_nores')
+
+if(make_gap):
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_2values_12_gap'+str(gap)+'.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_2values_12_gap'+str(gap)+'.csv'
+else:
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
 
 
-filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
-filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
 xx,F = scm.read_data(filex,filey)
 
 Ne = 2 #Number of x values --> F_j(x1,...xN)
 F1 = True
 inverse_problem = True
 perm_2values = True
-hyp_test = True #wheter the model is made for testing hyperparameters or not
+hyp_test = False #wheter the model is made for testing hyperparameters or not
 
 #For the file and plot's title
 if(perm_2values):
@@ -128,11 +138,20 @@ for i in range(nbins):
 
 #PLOT
 cost_matrix=np.flip(cost_matrix,axis=0)
-directory = '/Users/user/Desktop/cost_distribution/'
-if(hyp_test):
-    file_name = 'cost_distribution(hyp_test)_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
+if(make_gap):
+    directory = '/Users/user/Desktop/cost_distribution/gap/'
 else:
-    file_name = 'cost_distribution_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
+    directory = '/Users/user/Desktop/cost_distribution/'
+if(hyp_test):
+    if(make_gap):
+        file_name = 'cost_distribution(hyp_test)_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'_gap'+str(gap)+'.png'
+    else:
+        file_name = 'cost_distribution(hyp_test)_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
+else:
+    if(make_gap):
+        file_name = 'cost_distribution_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'_gap'+str(gap)+'.png'
+    else:
+        file_name = 'cost_distribution_'+ev_name+'_'+func_name+'_'+res_name+'_'+data_name+'.png'
 Title = 'Cost distribution, '+res_name+' restriction, '+ev_name
 
 fig = plt.figure(figsize=(7,7))

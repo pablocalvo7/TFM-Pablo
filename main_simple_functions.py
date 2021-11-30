@@ -16,7 +16,7 @@ import subroutines as scm
 
 ######################################################
 ########## HYPERPARAMETERS ##########
-hyp_test = True #If we are testing the hyperparameters, so we can vary them freely
+hyp_test = False #If we are testing the hyperparameters, so we can vary them freely
 
 nneurons = 25
 nhidden = 2
@@ -29,19 +29,26 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
-filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
+make_gap = False
+gap = 0.1
 
-Ne = 2 #Number of x values --> F_j(x1,...xN)
-perm_2values = True
-inverse_problem = True
+if(make_gap):
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_2values_12_gap'+str(gap)+'.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_2values_12_gap'+str(gap)+'.csv'
+else:
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_3values_nores.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_3values_nores.csv'
+
+Ne = 3 #Number of x values --> F_j(x1,...xN)
+number_res = 0 #2,3,4,..., number of sorted values starting from the beginning
+inverse_problem = False
 F1 = True
 
 #For the file and plot's title
-if(perm_2values):
-    res_name = '12'
-else:
+if(number_res==0):
     res_name = 'nores'
+else:
+    res_name = str(number_res)+'res'
 if(F1):
     func_name = 'F1'
 
@@ -99,12 +106,21 @@ score_va = model.evaluate(xva, yva, verbose=0)
 score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-directory = '/Users/user/Desktop/TFM/6. Simple functions/models/range_test/'
+if(make_gap):
+    directory = '/Users/user/Desktop/TFM/6. Simple functions/models/gap/'
+else:
+    directory = '/Users/user/Desktop/TFM/6. Simple functions/models/'
 if(inverse_problem):
     if(hyp_test):
-        file_name = 'Model(hyp_test)_'+func_name+'_'+str(Ne)+'values_'+res_name
+        if(make_gap):
+            file_name = 'Model(hyp_test)_'+func_name+'_'+str(Ne)+'values_'+res_name+'_gap'+str(gap)
+        else:
+            file_name = 'Model(hyp_test)_'+func_name+'_'+str(Ne)+'values_'+res_name
     else:
-        file_name = 'Model_'+func_name+'_'+str(Ne)+'values_'+res_name
+        if(make_gap):
+            file_name = 'Model_'+func_name+'_'+str(Ne)+'values_'+res_name+'_gap'+str(gap)
+        else:
+            file_name = 'Model_'+func_name+'_'+str(Ne)+'values_'+res_name
 else:
     if(hyp_test):
         file_name = 'Model(hyp_test)_direct_'+func_name+'_'+str(Ne)+'values_'+res_name

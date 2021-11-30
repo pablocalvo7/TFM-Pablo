@@ -198,6 +198,14 @@ def normalization_xx_range_test(xx): #NORMALIZATION OF F DATA [0,1)
 
     return xx_norm
 
+def sort_Nvalues(arr,number_res):
+
+    aux = np.sort(arr[0:number_res])
+    arr[0:number_res]=aux
+    arr_new = np.append(aux,arr[number_res:])
+
+    return arr_new
+
 
 
 ########## FUNCTIONS ##########
