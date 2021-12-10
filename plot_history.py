@@ -9,32 +9,29 @@ import subroutines as scm
 
 
 
+F1 = True
+Ne = 3 #Number of values
+if(F1): #For the plot's title
+    func_name = 'F1'
 
-rigid = False #Type of hamiltonian. True: rigid; False: periodic
-Ne = 3 #Number of atoms
-if(rigid): #For the plot's title
-    H_name = 'HR'
-else:
-    H_name = 'HP'
-
-hist_1 = np.loadtxt('/Users/user/Desktop/HP_models_more_data/e1<e2<e3/Model_3atoms_HP_nores/history.txt')
-hist_2 = np.loadtxt('/Users/user/Desktop/HP_models_more_data/e1<e2<e3/Model_3atoms_HP_allres/history.txt')
-#hist_3 = np.loadtxt('/Users/user/Desktop/HR_models_more_data/Model_6atoms_HR_invres_alt_2/history.txt')
+hist_1 = np.loadtxt('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_3values_3res_gap0.01/history.txt')
+hist_2 = np.loadtxt('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_3values_3res_gap0.05/history.txt')
+hist_3 = np.loadtxt('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_3values_3res_gap0.1/history.txt')
 #hist_4 = np.loadtxt('/Users/user/Desktop/HP_models_more_data/inv_plus_cyc/Model_4atoms_HP_allres/history.txt')
 
 
-epochs=hist_1[:,0]
+epochs=hist_1[20:,0]
 #val_nores=hist_1[:,1]
-train_1=hist_1[:,2]
+train_1=hist_1[20:,2]
 #val_invres=hist_invres[:,1]
-train_2=hist_2[:,2]
+train_2=hist_2[20:,2]
 #val_res1=hist_res1[:,1]
-#train_3=hist_3[:,2]
+train_3=hist_3[20:,2]
 
 
-file_graph = '/Users/user/Desktop/HP_models_more_data/'+H_name+'_'+str(Ne)+'atoms.png'
+file_graph = '/Users/user/Desktop/compare_gaps_3values.png'
 
 scm.GraphData_history([
                [epochs, train_1],
-               [epochs, train_2]],['r', 'b','k'], 
-              ['No restricted', 'All restricted'],H_name+', '+str(Ne)+' atoms (train data)',file_graph, Axx='Epochs', Axy='Loss')
+               [epochs, train_2],[epochs,train_3]],['r', 'b','k'], 
+              ['gap = 0.01', 'gap = 0.05','gap = 0.1'],'3 values',file_graph, Axx='Epochs', Axy='Cost')

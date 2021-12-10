@@ -5,6 +5,8 @@ from tensorflow.python.framework.ops import internal_convert_to_tensor_or_compos
 print(tf.__version__)
 from tensorflow.keras.layers import Input,Dense
 from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.losses import CategoricalCrossentropy
+from tensorflow.keras.optimizers import SGD
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,11 +18,11 @@ import subroutines as scm
 
 ######################################################
 ########## HYPERPARAMETERS ##########
-hyp_test = False #If we are testing the hyperparameters, so we can vary them freely
+hyp_test = True #If we are testing the hyperparameters, so we can vary them freely
 
-nneurons = 25
-nhidden = 2
-epochs = 100
+nneurons = 10
+nhidden = 1
+epochs = 50
 minib_size = 10
 eta = 0.01
 ########## HYPERPARAMETERS ##########
@@ -33,16 +35,16 @@ make_gap = False
 gap = 0.1
 
 if(make_gap):
-    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_2values_12_gap'+str(gap)+'.csv'
-    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_2values_12_gap'+str(gap)+'.csv'
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_3values_3res_gap'+str(gap)+'.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_3values_3res_gap'+str(gap)+'.csv'
 else:
-    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_3values_nores.csv'
-    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_3values_nores.csv'
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F_square_1values_positive_res.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F_square_1values_positive_res.csv'
 
-Ne = 3 #Number of x values --> F_j(x1,...xN)
-number_res = 0 #2,3,4,..., number of sorted values starting from the beginning
-inverse_problem = False
-F1 = True
+Ne = 1 #Number of x values --> F_j(x1,...xN)
+number_res = 2 #2,3,4,..., number of sorted values starting from the beginning
+inverse_problem = True
+F1 = False
 
 #For the file and plot's title
 if(number_res==0):
@@ -52,14 +54,18 @@ else:
 if(F1):
     func_name = 'F1'
 
-ntrain = 17000
+func_name = 'F_square'
+res_name = 'positive_res'
+
+ntrain = 5000
 nvalidation = 1000
 ndata = ntrain + nvalidation
 x,F = scm.read_data(filex,filey)
 
 #NORMALIZATION
-F_norm = scm.normalization_function_1(F,Ne)
+#F_norm = scm.normalization_function_1(F,Ne)
 #x_norm = scm.normalization_xx_range_test(x)
+F_norm = F
 
 if(inverse_problem):
     xtr = F_norm[0:ntrain,:]
@@ -143,7 +149,7 @@ file_graph = directory+file_name+'/pp.png'
 n_epochs = np.arange(len(r.history['loss']))
 scm.save_history(r,file_hist)
 
-Title = func_name+', '+str(Ne)+' atoms, restriction: '+res_name
+Title = func_name+', '+str(Ne)+' values, restriction: '+res_name
 scm.GraphData_history([[n_epochs, r.history['loss']],
                [n_epochs,  r.history['val_loss']]],['r', 'b'], 
               ['Train', 'Validation'],Title ,file_graph, Axx='Epochs', Axy='Loss')

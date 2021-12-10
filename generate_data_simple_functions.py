@@ -11,12 +11,14 @@ import subroutines as scm
 ######################################################
 ########## SET TYPE OF DATA ##########
 Nsamples=20000 #Number of samples for training/validation data
-Ne = 3 #Number of x values --> F_j(x1,...xN)
-F1 = True
+Ne = 1 #Number of x values --> F_j(x1,...xN)
+F1 = False
+F_square = True
 gap = 0.1
 
 #Data restrictions
-number_res = 3 #2,3,4,..., number of sorted values starting from the beginning
+number_res = 1 #2,3,4,..., number of sorted values starting from the beginning
+square_restriction = True
 make_gap = False
 
 #For the file's title
@@ -25,8 +27,13 @@ if(number_res==0):
 else:
     res_name = str(number_res)+'res'
 
+res_name = 'positive_res'
+
 if(F1):
     func_name = 'F1'
+
+if(F_square):
+    func_name = 'F_square'
 ########## SET TYPE OF DATA ##########
 ######################################################
 
@@ -42,11 +49,17 @@ for i in range(Nsamples):
 
     #Data estrictions
     if(make_gap):
-        while(abs(list_x[0]-list_x[1])<gap):
+        while((abs(list_x[0]-list_x[1])<gap) or (abs(list_x[1]-list_x[2])<gap)):
             list_x = np.random.rand(Ne)
 
-    scm.sort_Nvalues(list_x,number_res)
+    #scm.sort_Nvalues(list_x,number_res)
     #End data restrictions
+    if(square_restriction):
+        if(list_x[0] < 0):
+            list_x[0] = -list_x[0]
+
+    if(F_square):
+        func = list_x[0]*list_x[0]
 
     if(F1):
         func = scm.function_1(list_x,Ne)

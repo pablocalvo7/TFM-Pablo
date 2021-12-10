@@ -17,39 +17,47 @@ import subroutines as scm
 
 ######################################################
 ########## IMPORT MODELS AND DATA ##########
-make_gap = True
-gap = 0.1
+alpha = False
+make_gap = False
+gap = 0.01
 
 #MODELS
 if(make_gap):
-    model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_2values_12_gap'+str(gap))
+    model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_3values_3res_gap'+str(gap))
 else:
-    #model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_nores')
-    #model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12')
-    model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_2values_12_multiple/nhidden/2')
+    #model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_3values_nores')
+    model_2res = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model(hyp_test)_F_square_1values_positive_res')
+    #model_3res = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_3values_3res')
     #model_direct = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_direct_F1_2values_nores')
 
 
 if(make_gap):
-    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_2values_12_gap'+str(gap)+'.csv'
-    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_2values_12_gap'+str(gap)+'.csv'
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_3values_3res_gap'+str(gap)+'.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_3values_3res_gap'+str(gap)+'.csv'
 else:
-    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F1_2values_12.csv'
-    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F1_2values_12.csv'
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F_square_1values_positive_res.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F_square_1values_positive_res.csv'
+
+Nsamples = 20000
 xx,F = scm.read_data(filex,filey)
 
-Ne = 2 #Number of x values --> F_j(x1,...xN)
-F1 = True
+Ne = 1 #Number of x values --> F_j(x1,...xN)
+F1 = False
 inverse_problem = True
-hyp_test = False #wheter the model is made for testing hyperparameters or not
+hyp_test = True #wheter the model is made for testing hyperparameters or not
 
 #For the file and plot's title
 if(F1):
     func_name = 'F1'
 
+func_name = 'F_square'
+res_name = 'positive_res'
+
 #NORMALIZATION
-F_norm = scm.normalization_function_1(F,Ne)
+#F_norm = scm.normalization_function_1(F,Ne)
 #xx_norm = scm.normalization_xx_range_test(xx)
+F_norm = F
+
 
 if(inverse_problem):
     x=F_norm
@@ -65,8 +73,8 @@ else:
 ######################################################
 ########## PREDICT AND PLOT ##########
 train = True #whether we plot training data or validation data
-plot_separated_values = False
-plot_differences = True
+plot_separated_values = True
+plot_differences = False
 plot_sum = False
 
 if(train): #for the file's title
@@ -74,13 +82,13 @@ if(train): #for the file's title
 else:
     data_name = 'val'
 
-ntrain = 17000
-nval = 1000
+ntrain = 1000
+nval = 300
 
 #PREDICTIONS
 #NN_nores_y = model_nores.predict(x)
-NN_12_y = model_12.predict(x)
-#NN_direct_y = model_direct.predict(x)
+NN_2res_y = model_2res.predict(x)
+#NN_3res_y = model_3res.predict(x)
 
 
 #from which position of "y" we plot (depending on train or validation plotting)
@@ -89,12 +97,14 @@ if(train):
 else:
     from_num = ntrain
 
+
+
 if(plot_separated_values):
     for i in range(Ne):
         if(make_gap):
             directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/gap/'
         else:
-            directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/'
+            directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/1 values/'
         if(inverse_problem):
             if(hyp_test):
                 if(make_gap):
@@ -105,7 +115,10 @@ if(plot_separated_values):
                 if(make_gap):
                     file_name='x'+str(i+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'_gap'+str(gap)+'.png'
                 else:
-                    file_name='x'+str(i+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
+                    if(alpha):
+                        file_name='alpha'+str(i+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
+                    else:
+                        file_name='x'+str(i+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
         else:
             if(hyp_test):
                 file_name='direct(hyp_test)_F'+str(i+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
@@ -116,14 +129,18 @@ if(plot_separated_values):
         ndata=1000
         y_desired = y[from_num:from_num+ndata,i]
         #y_NN_nores = NN_nores_y[from_num:from_num+ndata,i]
-        y_NN_12 = NN_12_y[from_num:from_num+ndata,i]
-        #y_NN_direct = NN_direct_y[from_num:from_num+ndata,i]
+        y_NN_2res = NN_2res_y[from_num:from_num+ndata,i]
+        #y_NN_3res = NN_3res_y[from_num:from_num+ndata,i]
 
-        datalist = [[y_desired,y_NN_12]]
-        labellist = ['NN=desired','NN 1,2 restriction']
+        datalist = [[y_desired,y_NN_2res]]
+        labellist = ['NN=desired','NN (+) restriction']
         if(inverse_problem):
-            Axx = r'$x_'+str(i+1)+'$ (desired)'
-            Axy = r'$x_'+str(i+1)+'$ (NN)'
+            if(alpha):
+                Axx = r'$\alpha_'+str(i+1)+'$ (desired)'
+                Axy = r'$\alpha_'+str(i+1)+'$ (NN)'
+            else:
+                Axx = r'$x_'+str(i+1)+'$ (desired)'
+                Axy = r'$x_'+str(i+1)+'$ (NN)'
         else:
             Axx = r'$F_'+str(i+1)+'$ (desired)'
             Axy = r'$F_'+str(i+1)+'$ (NN)'
@@ -134,7 +151,7 @@ if(plot_differences):
     for i in range(Ne):
         for j in range(i+1,Ne):
             if(make_gap):
-                directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/gap/'
+                directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/3 values/gap/'
             else:
                 directory = '/Users/user/Desktop/TFM/6. Simple functions/predictions/2 values/'
             if(hyp_test):
@@ -149,12 +166,14 @@ if(plot_differences):
                     file_name = 'x'+str(i+1)+'-x'+str(j+1)+'_'+func_name+'_'+str(Ne)+'values_'+data_name+'.png'
             Title = func_name+', '+str(Ne)+' values'
 
-            ndata = 1000
+            ndata = 17000
             y_desired = abs(y[from_num:from_num+ndata,i]-y[from_num:from_num+ndata,j])
             #y_NN_nores = abs(NN_nores_y[from_num:from_num+ndata,i]-NN_nores_y[from_num:from_num+ndata,j])
-            y_NN_12 = abs(NN_12_y[from_num:from_num+ndata,i]-NN_12_y[from_num:from_num+ndata,j])
-            datalist = [[y_desired,y_NN_12]]
-            labellist = ['NN=desired','NN 1,2 restricted']
+            y_NN_2res = abs(NN_2res_y[from_num:from_num+ndata,i]-NN_2res_y[from_num:from_num+ndata,j])
+            #y_NN_3res = abs(NN_3res_y[from_num:from_num+ndata,i]-NN_3res_y[from_num:from_num+ndata,j])
+
+            datalist = [[y_desired,y_NN_2res]]
+            labellist = ['NN=desired','NN 2 restricted']
             Axx = r'$|x_'+str(i+1)+r' - x_'+str(j+1)+' |$ (desired)'
             Axy = r'$|x_'+str(i+1)+r' - x_'+str(j+1)+' |$ (NN)'
 
