@@ -13,12 +13,13 @@ import subroutines as scm
 Nsamples=20000 #Number of samples for training/validation data
 Ne = 1 #Number of x values --> F_j(x1,...xN)
 F1 = False
-F_square = True
+F_square = False
+F_square_root = True
 gap = 0.1
 
 #Data restrictions
 number_res = 1 #2,3,4,..., number of sorted values starting from the beginning
-square_restriction = True
+square_restriction = False
 make_gap = False
 
 #For the file's title
@@ -34,6 +35,9 @@ if(F1):
 
 if(F_square):
     func_name = 'F_square'
+
+if(F_square_root):
+    func_name = 'F_square_root'
 ########## SET TYPE OF DATA ##########
 ######################################################
 
@@ -60,6 +64,9 @@ for i in range(Nsamples):
 
     if(F_square):
         func = list_x[0]*list_x[0]
+    
+    if(F_square_root):
+        func = np.sqrt(list_x[0])
 
     if(F1):
         func = scm.function_1(list_x,Ne)

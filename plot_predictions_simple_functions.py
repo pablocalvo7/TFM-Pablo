@@ -26,7 +26,7 @@ if(make_gap):
     model_12 = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/gap/Model_F1_3values_3res_gap'+str(gap))
 else:
     #model_nores = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_3values_nores')
-    model_2res = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model(hyp_test)_F_square_1values_positive_res')
+    model_2res = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model(hyp_test)_direct_F_square_root_1values_positive_res')
     #model_3res = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_F1_3values_3res')
     #model_direct = models.load_model('/Users/user/Desktop/TFM/6. Simple functions/models/Model_direct_F1_2values_nores')
 
@@ -50,7 +50,7 @@ hyp_test = True #wheter the model is made for testing hyperparameters or not
 if(F1):
     func_name = 'F1'
 
-func_name = 'F_square'
+func_name = 'F_square_uniform_values'
 res_name = 'positive_res'
 
 #NORMALIZATION
@@ -82,8 +82,8 @@ if(train): #for the file's title
 else:
     data_name = 'val'
 
-ntrain = 1000
-nval = 300
+ntrain = 10000
+nval = 3000
 
 #PREDICTIONS
 #NN_nores_y = model_nores.predict(x)

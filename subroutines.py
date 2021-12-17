@@ -77,7 +77,7 @@ def read_data(fileX, filey):
 def GraphData_history(datalist, typeplotlist, labellist, Title, filename_data,\
               Axx = "x", Axy = "y",\
               left=None, right=None, bottom=None, top = None):
-    fig = plt.figure(figsize=(8, 6))
+    fig = plt.figure(figsize=(8, 8))
     plt.rcParams['font.size'] = 16.
     ngraph = len(datalist)
     for il in range(ngraph):

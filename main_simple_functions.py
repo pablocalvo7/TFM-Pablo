@@ -5,7 +5,7 @@ from tensorflow.python.framework.ops import internal_convert_to_tensor_or_compos
 print(tf.__version__)
 from tensorflow.keras.layers import Input,Dense
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.losses import CategoricalCrossentropy
+from tensorflow.keras.losses import CategoricalCrossentropy, LogCosh
 from tensorflow.keras.optimizers import SGD
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ hyp_test = True #If we are testing the hyperparameters, so we can vary them free
 
 nneurons = 10
 nhidden = 1
-epochs = 50
+epochs = 20
 minib_size = 10
 eta = 0.01
 ########## HYPERPARAMETERS ##########
@@ -38,12 +38,12 @@ if(make_gap):
     filex = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_F1_3values_3res_gap'+str(gap)+'.csv'
     filey = '/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_F1_3values_3res_gap'+str(gap)+'.csv'
 else:
-    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F_square_1values_positive_res.csv'
-    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F_square_1values_positive_res.csv'
+    filex = '/Users/user/Desktop/TFM/6. Simple functions/data/x_F_square_root_1values_positive_res.csv'
+    filey = '/Users/user/Desktop/TFM/6. Simple functions/data/F_F_square_root_1values_positive_res.csv'
 
 Ne = 1 #Number of x values --> F_j(x1,...xN)
 number_res = 2 #2,3,4,..., number of sorted values starting from the beginning
-inverse_problem = True
+inverse_problem = False
 F1 = False
 
 #For the file and plot's title
@@ -54,11 +54,11 @@ else:
 if(F1):
     func_name = 'F1'
 
-func_name = 'F_square'
+func_name = 'F_square_root'
 res_name = 'positive_res'
 
-ntrain = 5000
-nvalidation = 1000
+ntrain = 15000
+nvalidation = 5000
 ndata = ntrain + nvalidation
 x,F = scm.read_data(filex,filey)
 
@@ -100,7 +100,7 @@ model.summary()
 
 # Compile and fit
 name_opt='Adam'
-loss_function = 'mse'
+loss_function = 'logcosh'
 opt = tf.keras.optimizers.Adam(eta)
 model.compile(optimizer=opt, loss=loss_function)
 
