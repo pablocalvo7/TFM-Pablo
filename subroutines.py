@@ -44,14 +44,120 @@ def autoenergies_chain_Natoms(e,N,J,rigid): #periodic hamiltonian
     return autovals
 
 
-def cyclic_permutation(e,N): #(e_1, ..., e_N) --> (e_2, ..., e_N, e_1)
+def cyclic_permutation(e,N): #(e_1, ..., e_N) --> (e_N, e_1, ..., e_{N-1})
     e_new=[]
+    e_new.append(e[N-1])
     for i in range(N-1):
-        e_new.append(e[i+1])
-    e_new.append(e[0])
+        e_new.append(e[i])
 
     return e_new
 
+#inv_plus_cyc restriction
+def save_list(list_energies, Ne): #save: e_N > e_1, e_2, e_3, ... and e_1 < e_{N-1} is fulfilled!
+
+    save_1 = list_energies[0] <= list_energies[Ne-1]
+    for j in range(1,Ne-1):
+        save_1 = save_1 and (list_energies[j] <= list_energies[Ne-1])
+    save_2 = list_energies[0] <= list_energies[Ne-2]
+    save_tot = save_1 and save_2
+
+    return save_tot
+
+
+#break all symmetries apart from c_5 , c_5^4 , s_4 and s_5 in pentagon
+def save_list_4(list_energies, Ne): #save: e_2 > e_4, e_5, e_1 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[1]
+    save_tot = save_tot and (list_energies[3] <= list_energies[1])
+    save_tot = save_tot and (list_energies[Ne-1] <= list_energies[1]) 
+
+    return save_tot
+
+#break symmetries c_5^2 , c_5^3 , s_1 and s_2 in pentagon
+def save_list_5(list_energies, Ne): #save: e_2 < e_4, e_5 is fulfilled!
+
+    save_tot = list_energies[1] <= list_energies[3]
+    save_tot = save_tot and (list_energies[1] <= list_energies[Ne-1])
+
+    return save_tot
+
+#break symmetries s_1 , s_2 and s_3 in pentagon
+def save_list_6(list_energies, Ne): #save: e_3 > e_4, e_5 and e_4 < e_2 is fulfilled!
+
+    save_tot = list_energies[3] <= list_energies[2]
+    save_tot = save_tot and (list_energies[Ne-1] <= list_energies[2])
+    save_tot = save_tot and (list_energies[3] <= list_energies[1])
+
+    return save_tot
+
+#break symmetries s_1 and s_2 in pentagon
+def save_list_7(list_energies, Ne): #save: e_5 > e_1, e_2 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+    save_tot = save_tot and (list_energies[1] <= list_energies[Ne-1])
+
+    return save_tot
+
+#break symmetry s_1 in pentagon
+def save_sweep_1(list_energies, Ne): #save: e_5 > e_1 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+
+    return save_tot
+
+#break symmetries s_1 and s_3 in pentagon
+def save_sweep_2(list_energies, Ne): #save: e_5 > e_1, e_3 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+    save_tot = save_tot and (list_energies[2] <= list_energies[Ne-1])
+
+    return save_tot
+
+#break symmetries s_1 , s_3 , s_4 , c_5 and c_5^4 in pentagon
+def save_sweep_3(list_energies, Ne): #save: e_5 > e_1 , e_3 , e_4 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+    save_tot = save_tot and (list_energies[2] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[3] <= list_energies[Ne-1])
+
+    return save_tot
+
+#break symmetry s_1 , s_3 , s_4 , s_5 , c_5 and c_5^4 in pentagon
+def save_sweep_4(list_energies, Ne): #save: e_5 > e_1 , e_3 , e_4 and e_1 < e_4 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+    save_tot = save_tot and (list_energies[2] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[3] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[0] <= list_energies[3])
+
+    return save_tot
+
+#break all symmetries in pentagon
+def save_sweep_5(list_energies, Ne): #save: e_5 > e_1 , e_2 , e_3 , e_4 and e_1 < e_4 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+    save_tot = save_tot and (list_energies[1] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[2] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[3] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[0] <= list_energies[3])
+
+    return save_tot
+
+#break all symmetries in pentagon
+def save_sweep_5_diff(list_energies, Ne): #save: e_5 > e_1 , e_2 , e_3 , e_4 and MAX_DIFF e_1 < e_4 or e_2 < e_3 is fulfilled!
+
+    save_tot = list_energies[0] <= list_energies[Ne-1]
+    save_tot = save_tot and (list_energies[1] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[2] <= list_energies[Ne-1])
+    save_tot = save_tot and (list_energies[3] <= list_energies[Ne-1])
+    diff_03 = abs(list_energies[0] - list_energies[3])
+    diff_12 = abs(list_energies[1] - list_energies[2])
+    if(diff_03 > diff_12):
+        save_tot = save_tot and (list_energies[0] <= list_energies[3])
+    else:
+        save_tot = save_tot and (list_energies[1] <= list_energies[2])
+
+    return save_tot
 
 def normalization(energies, eigenvalues, Ne, J, rigid): #NORMALIZATION OF EIGENVALUES DATA [0,1)
 
@@ -77,7 +183,7 @@ def read_data(fileX, filey):
 def GraphData_history(datalist, typeplotlist, labellist, Title, filename_data,\
               Axx = "x", Axy = "y",\
               left=None, right=None, bottom=None, top = None):
-    fig = plt.figure(figsize=(8, 8))
+    fig = plt.figure(figsize=(8, 6))
     plt.rcParams['font.size'] = 16.
     ngraph = len(datalist)
     for il in range(ngraph):

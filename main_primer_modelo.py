@@ -18,7 +18,7 @@ import subroutines as scm
 ########## HYPERPARAMETERS ##########
 nneurons = 50
 nhidden = 1
-epochs = 120
+epochs = 80
 minib_size = 10
 eta = 0.01
 ########## HYPERPARAMETERS ##########
@@ -27,32 +27,55 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-filex = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/more_data_HR/ENERGIES_3atoms_HR_invres.csv'
-filey = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/more_data_HR/EIGENVALUES_3atoms_HR_invres.csv'
+grid = False
+
+if(grid):
+    filex = '/Users/user/Desktop/barrer_datos_2/data/(grid)ENERGIES_5atoms_HP_sweep_5_diff.csv'
+    filey = '/Users/user/Desktop/barrer_datos_2/data/(grid)EIGENVALUES_5atoms_HP_sweep_5_diff.csv'
+
+    filex_val = '/Users/user/Desktop/barrer_datos_2/data/ENERGIES_5atoms_HP_sweep_5_diff.csv'
+    filey_val = '/Users/user/Desktop/barrer_datos_2/data/EIGENVALUES_5atoms_HP_sweep_5_diff.csv'
+else:
+    filex = '/Users/user/Desktop/HR_abcd/ENERGIES_4atoms_HR_invres_max.csv'
+    filey = '/Users/user/Desktop/HR_abcd/EIGENVALUES_4atoms_HR_invres_max.csv'
 
 J=1
-Ne = 3 #Number of atoms
+Ne = 4 #Number of atoms
 rigid = True #Type of hamiltonian. True: rigid; False: periodic
-inverse_problem = False
+inverse_problem = True
 
-ntrain = 10000
-nvalidation = 5000
+#for the title
+if(rigid): #For the plot's title
+    H_name = 'HR'
+else:
+    H_name = 'HP'
+
+#For the file's title
+res_name = 'invres_max'
+
+ntrain = 20000
+nvalidation = 10000
 ndata = ntrain + nvalidation
 energies,eigenvalues=scm.read_data(filex,filey)
+if(grid):
+    energies_val,eigenvalues_val = scm.read_data(filex_val,filey_val)
 
 #NORMALIZATION
-x,y = scm.normalization(energies, eigenvalues, Ne, J, rigid)
-
-if(inverse_problem):
-    xtr = x[0:ntrain,:]
-    xva = x[ntrain:ntrain + nvalidation, :]
-    ytr = y[0:ntrain,:]
-    yva = y[ntrain:ntrain + nvalidation, :]
+if(grid):
+    xtr,ytr = scm.normalization(energies, eigenvalues, Ne, J, rigid)
+    xva,yva = scm.normalization(energies_val, eigenvalues_val, Ne, J, rigid)
 else:
-    ytr = x[0:ntrain,:]
-    yva = x[ntrain:ntrain + nvalidation, :]
-    xtr = y[0:ntrain,:]
-    xva = y[ntrain:ntrain + nvalidation, :]
+    x,y = scm.normalization(energies, eigenvalues, Ne, J, rigid)
+    if(inverse_problem):
+        xtr = x[0:ntrain,:]
+        xva = x[ntrain:ntrain + nvalidation, :]
+        ytr = y[0:ntrain,:]
+        yva = y[ntrain:ntrain + nvalidation, :]
+    else:
+        ytr = x[0:ntrain,:]
+        yva = x[ntrain:ntrain + nvalidation, :]
+        xtr = y[0:ntrain,:]
+        xva = y[ntrain:ntrain + nvalidation, :]
 
 input_neurons  = xtr.shape[1]
 output_neurons = ytr.shape[1]
@@ -88,11 +111,18 @@ score_va = model.evaluate(xva, yva, verbose=0)
 score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-file_name_save_NN = '/Users/user/Desktop/TFM/3. Primer Modelo/from 26_10_2021/HR_models_more_data/sigmoid_hidden/Model_direct_3atoms_HR_invres'
-model.save(file_name_save_NN)
+directory = '/Users/user/Desktop/HR_abcd/'
+if(inverse_problem):
+    file_name = 'Model_'+str(Ne)+'atoms_'+H_name+'_'+res_name
+else:
+    file_name = 'Model_direct_'+str(Ne)+'atoms_'+H_name+'_'+res_name
+if(grid):
+    file_name = '(grid)Model_'+str(Ne)+'atoms_'+H_name+'_'+res_name
+
+model.save(directory+file_name)
 
 #Save Description
-file_hyper=open(file_name_save_NN+'/hyperparameters.txt',"w")
+file_hyper=open(directory+file_name+'/hyperparameters.txt',"w")
 
 description='nneurons='+str(nneurons)+'\n'+'nhidden='+str(nhidden)+'\n'+'n_train='+str(ntrain)+'\n'+'n_val='+str(nvalidation)+'\n'+'epochs='+str(epochs)+'\n'+'mbs='+str(minib_size)+'\n'+'eta='+str(eta)+'\n'+'loss='+str(loss_function)+'\n'+'optimizer='+name_opt
 
@@ -101,14 +131,15 @@ file_hyper.write(description)
 file_hyper.close()
 
 # Plot the loss and save the history
-file_hist = file_name_save_NN+'/history.txt'
-file_graph = file_name_save_NN+'/pp.png'
+file_hist = directory+file_name+'/history.txt'
+file_graph = directory+file_name+'/pp.png'
 n_epochs = np.arange(len(r.history['loss']))
 scm.save_history(r,file_hist)
 
+Title = H_name+', '+str(Ne)+' atoms, '+res_name
 scm.GraphData_history([[n_epochs, r.history['loss']],
                [n_epochs,  r.history['val_loss']]],['r', 'b'], 
-              ['Train', 'Validation'],'HR, 3 atoms, inv. restriction',file_graph, Axx='Epochs', Axy='Loss')
+              ['Train', 'Validation'],Title,file_graph, Axx='Epochs', Axy='Loss')
 
 ########## NEURAL NETWORK ##########
 ######################################################
