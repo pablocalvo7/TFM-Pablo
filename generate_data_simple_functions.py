@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import subroutines as scm
+import math
 ########## IMPORT PACKAGES ##########
 ######################################################
 
@@ -14,7 +15,8 @@ Nsamples=20000 #Number of samples for training/validation data
 Ne = 1 #Number of x values --> F_j(x1,...xN)
 F1 = False
 F_square = False
-F_square_root = True
+F_square_root = False
+F_sin = True
 gap = 0.1
 
 #Data restrictions
@@ -28,7 +30,7 @@ if(number_res==0):
 else:
     res_name = str(number_res)+'res'
 
-res_name = 'positive_res'
+res_name = 'nores'
 
 if(F1):
     func_name = 'F1'
@@ -38,6 +40,9 @@ if(F_square):
 
 if(F_square_root):
     func_name = 'F_square_root'
+
+if(F_sin):
+    func_name = 'sin_2pix'
 ########## SET TYPE OF DATA ##########
 ######################################################
 
@@ -70,6 +75,9 @@ for i in range(Nsamples):
 
     if(F1):
         func = scm.function_1(list_x,Ne)
+
+    if(F_sin):
+        func = math.sin(2*np.pi*list_x[0])
     
     x.append(list_x)
     y.append(func)  
@@ -89,8 +97,8 @@ if(make_gap):
     dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/gap/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'_gap'+str(gap)+'.csv', sep = ',', header = False,index=False)
     dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/gap/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'_gap'+str(gap)+'.csv', sep = ',', header = False,index=False)
 else:
-    dfx.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
-    dfy.to_csv('/Users/user/Desktop/TFM/6. Simple functions/data/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+    dfx.to_csv('/Users/user/Desktop/models_symmetry_loss/data/x_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
+    dfy.to_csv('/Users/user/Desktop/models_symmetry_loss/data/F_'+func_name+'_'+str(Ne)+'values_'+res_name+'.csv', sep = ',', header = False,index=False)
 
 ########## SAVE DATA ########## 
 ######################################################

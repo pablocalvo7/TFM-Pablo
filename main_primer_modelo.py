@@ -30,18 +30,18 @@ eta = 0.01
 grid = False
 
 if(grid):
-    filex = '/Users/user/Desktop/barrer_datos_2/data/(grid)ENERGIES_5atoms_HP_sweep_5_diff.csv'
-    filey = '/Users/user/Desktop/barrer_datos_2/data/(grid)EIGENVALUES_5atoms_HP_sweep_5_diff.csv'
+    filex = '/Users/user/Desktop/barrer_datos_2/data/(grid)ENERGIES_5atoms_HP_nores.csv'
+    filey = '/Users/user/Desktop/barrer_datos_2/data/(grid)EIGENVALUES_5atoms_HP_nores.csv'
 
-    filex_val = '/Users/user/Desktop/barrer_datos_2/data/ENERGIES_5atoms_HP_sweep_5_diff.csv'
-    filey_val = '/Users/user/Desktop/barrer_datos_2/data/EIGENVALUES_5atoms_HP_sweep_5_diff.csv'
+    filex_val = '/Users/user/Desktop/barrer_datos_2/data/ENERGIES_5atoms_HP_nores.csv'
+    filey_val = '/Users/user/Desktop/barrer_datos_2/data/EIGENVALUES_5atoms_HP_nores.csv'
 else:
-    filex = '/Users/user/Desktop/HR_abcd/ENERGIES_4atoms_HR_invres_max.csv'
-    filey = '/Users/user/Desktop/HR_abcd/EIGENVALUES_4atoms_HR_invres_max.csv'
+    filex = '/Users/user/Desktop/barrer_datos_2/data/ENERGIES_5atoms_HP_sweep_5.csv'
+    filey = '/Users/user/Desktop/barrer_datos_2/data/EIGENVALUES_5atoms_HP_sweep_5.csv'
 
 J=1
-Ne = 4 #Number of atoms
-rigid = True #Type of hamiltonian. True: rigid; False: periodic
+Ne = 5 #Number of atoms
+rigid = False #Type of hamiltonian. True: rigid; False: periodic
 inverse_problem = True
 
 #for the title
@@ -51,9 +51,9 @@ else:
     H_name = 'HP'
 
 #For the file's title
-res_name = 'invres_max'
+res_name = 'nores'
 
-ntrain = 20000
+ntrain = 40000
 nvalidation = 10000
 ndata = ntrain + nvalidation
 energies,eigenvalues=scm.read_data(filex,filey)
@@ -107,11 +107,11 @@ model.compile(optimizer=opt, loss=loss_function)
 model.summary()
 r = model.fit(xtr, ytr, batch_size = minib_size, epochs=epochs,
               validation_data=(xva, yva))
-score_va = model.evaluate(xva, yva, verbose=0)
-score_tr = model.evaluate(xtr, ytr, verbose=0)
+#score_va = model.evaluate(xva, yva, verbose=0)
+#score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-directory = '/Users/user/Desktop/HR_abcd/'
+directory = '/Users/user/Desktop/'
 if(inverse_problem):
     file_name = 'Model_'+str(Ne)+'atoms_'+H_name+'_'+res_name
 else:

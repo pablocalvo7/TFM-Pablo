@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import tensorflow.keras.backend as K
 ########## IMPORT PACKAGES ##########
 ######################################################
 
@@ -275,6 +276,65 @@ def two_elements_permutation(list,length,pos1,pos2):
     
     return new_list
 
+def cyclic_permutation_tensor(tensor,N): #(e_1, ..., e_N) --> (e_N, e_1, ..., e_{N-1})
+    tensor_new = tensor[N-1]
+    tensor_new = tf.reshape(tensor_new,[1,])
+    for i in range(N-1):
+        tensor_add = tensor[i]
+        tensor_add = tf.reshape(tensor_add,[1,])
+        tensor_new = tf.concat([tensor_new, tensor_add], axis=0)
+    return tensor_new
+
+def MSE_one_value(y_true,y_pred):
+    sq_diff = tf.square(y_true-y_pred)
+    sq_diff = tf.math.reduce_sum(sq_diff)
+    mse = 0.5*sq_diff
+    return mse
+    
+
+def symmetry_loss(y_true,y_pred):
+    batch_size = np.shape(y_true)[0]
+    Ne = np.shape(y_true)[1]
+
+    loss_vector =[]
+    for i in range(batch_size):
+        min_loss = MSE_one_value(y_true[i],y_pred[i])
+        sym_y = y_pred[i]
+        for j in range(Ne):
+            sym_y = cyclic_permutation_tensor(sym_y,Ne)
+            new_loss = MSE_one_value(y_true[i],sym_y)
+            if( new_loss < min_loss ):
+                min_loss = new_loss
+
+        sym_y = K.reverse(sym_y,axes=0)
+
+        for j in range(Ne):
+            sym_y = cyclic_permutation_tensor(sym_y,Ne)
+            new_loss = MSE_one_value(y_true[i],sym_y)
+            if( new_loss < min_loss ):
+                min_loss = new_loss
+
+        loss_vector.append(min_loss)
+
+    loss_vector = tf.convert_to_tensor(loss_vector)
+    loss = K.mean(loss_vector)
+    return loss
+
+def symmetry_loss_square(y_true,y_pred):
+    batch_size = np.shape(y_true)[0]
+
+    loss_vector =[]
+    for i in range(batch_size):
+        min_loss = MSE_one_value(y_true[i],y_pred[i])
+        sym_y = -y_pred[i]
+        new_loss = MSE_one_value(y_true[i],sym_y)
+        if( new_loss < min_loss ):
+            min_loss = new_loss
+        loss_vector.append(min_loss)
+
+    loss = sum(loss_vector)/batch_size
+    return loss
+
 #SIMPLE FUNCTIONS
 
 def function_1(list_x,Ne):
@@ -311,7 +371,6 @@ def sort_Nvalues(arr,number_res):
     arr_new = np.append(aux,arr[number_res:])
 
     return arr_new
-
 
 
 ########## FUNCTIONS ##########
