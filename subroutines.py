@@ -293,11 +293,11 @@ def MSE_one_value(y_true,y_pred):
     
 
 def symmetry_loss(y_true,y_pred):
-    batch_size = np.shape(y_true)[0]
-    Ne = np.shape(y_true)[1]
+    b_size = y_pred.shape[0]
+    Ne = y_pred.shape[1]
 
     loss_vector =[]
-    for i in range(batch_size):
+    for i in range(b_size):
         min_loss = MSE_one_value(y_true[i],y_pred[i])
         sym_y = y_pred[i]
         for j in range(Ne):

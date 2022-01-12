@@ -13,10 +13,10 @@ generate_random = True
 generate_grid = False
 J=1 #Hopping
 if(generate_grid):
-    Nsamples = 100000 #Number of samples ; GENERATE RANDOM
+    Nsamples = 40000 #Number of samples ; GENERATE RANDOM
 if(generate_random):
-    Nsamples = 50000
-Ne = 5 #Number of atoms
+    Nsamples = 10000
+Ne = 2 #Number of atoms
 rigid = False #Type of hamiltonian. True: rigid; False: periodic
 if(rigid): #For the plot's title
     H_name = 'HR'
@@ -29,10 +29,13 @@ res_2 = False
 res_3 = False
 res_4 = False
 res_5 = False
-res_5_diff = True
+res_5_diff = False
+inv_res = True
 #pentagon
 
 #For the plot's title
+if(inv_res):
+    res_name = 'invres'
 if(res_1):
     res_name = 'sweep_1'
 if(res_2):
@@ -54,9 +57,9 @@ if(res_5_diff):
 x = []
 y = []
 
-directory = '/Users/user/Desktop/barrer_datos_2/data/'
-filex = directory+'ENERGIES_5atoms_HP_sweep_4.csv'
-filey = directory+'EIGENVALUES_5atoms_HP_sweep_4.csv'
+directory = '/Users/user/Desktop/HP_symmetry_loss/data/'
+filex = directory+'(grid)ENERGIES_2atoms_HP_nores.csv'
+filey = directory+'(grid)EIGENVALUES_2atoms_HP_nores.csv'
 
 energies,eigenvalues=scm.read_data(filex,filey)
 
@@ -65,6 +68,10 @@ for i in range(Nsamples):
     list_energies = energies[i,:].tolist()
 
     #Data estrictions 
+    if(inv_res):
+        if(list_energies[0]>list_energies[Ne-1]):
+            list_energies = np.flip(list_energies)
+
     if(res_1):
         num_cyc = 0 #number of cyclic permutations
         while(not scm.save_sweep_1(list_energies,Ne)):
@@ -137,7 +144,7 @@ y = np.array(y) #EIGENVALUES NOT NORMALIZED
 dfx = pd.DataFrame(x)
 dfy = pd.DataFrame(y)
 
-directory = '/Users/user/Desktop/barrer_datos_2/data/'
+directory = '/Users/user/Desktop/HP_symmetry_loss/data/'
 
 if(generate_random):
     dfx.to_csv(directory+'ENERGIES_'+str(Ne)+'atoms_'+H_name+'_'+res_name+'.csv', sep = ',', header = False,index=False)

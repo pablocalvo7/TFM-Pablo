@@ -27,20 +27,20 @@ eta = 0.01
 
 ######################################################
 ########## DATA ##########
-grid = False
+grid = True
 
 if(grid):
-    filex = '/Users/user/Desktop/barrer_datos_2/data/(grid)ENERGIES_5atoms_HP_nores.csv'
-    filey = '/Users/user/Desktop/barrer_datos_2/data/(grid)EIGENVALUES_5atoms_HP_nores.csv'
+    filex = '/Users/user/Desktop/HP_symmetry_loss/data/(grid)ENERGIES_2atoms_HP_invres.csv'
+    filey = '/Users/user/Desktop/HP_symmetry_loss/data/(grid)EIGENVALUES_2atoms_HP_invres.csv'
 
-    filex_val = '/Users/user/Desktop/barrer_datos_2/data/ENERGIES_5atoms_HP_nores.csv'
-    filey_val = '/Users/user/Desktop/barrer_datos_2/data/EIGENVALUES_5atoms_HP_nores.csv'
+    filex_val = '/Users/user/Desktop/HP_symmetry_loss/data/ENERGIES_2atoms_HP_invres.csv'
+    filey_val = '/Users/user/Desktop/HP_symmetry_loss/data/EIGENVALUES_2atoms_HP_invres.csv'
 else:
     filex = '/Users/user/Desktop/barrer_datos_2/data/ENERGIES_5atoms_HP_sweep_5.csv'
     filey = '/Users/user/Desktop/barrer_datos_2/data/EIGENVALUES_5atoms_HP_sweep_5.csv'
 
-J=1
-Ne = 5 #Number of atoms
+J=1 #nearest neighbours hopping term
+Ne = 2 #Number of atoms
 rigid = False #Type of hamiltonian. True: rigid; False: periodic
 inverse_problem = True
 
@@ -51,7 +51,7 @@ else:
     H_name = 'HP'
 
 #For the file's title
-res_name = 'nores'
+res_name = 'invres'
 
 ntrain = 40000
 nvalidation = 10000
@@ -79,6 +79,8 @@ else:
 
 input_neurons  = xtr.shape[1]
 output_neurons = ytr.shape[1]
+
+print("shape ytr: ",np.shape(ytr))
 ########## DATA ##########
 ######################################################
 
@@ -111,7 +113,7 @@ r = model.fit(xtr, ytr, batch_size = minib_size, epochs=epochs,
 #score_tr = model.evaluate(xtr, ytr, verbose=0)
 
 #Save the model
-directory = '/Users/user/Desktop/'
+directory = '/Users/user/Desktop/HP_symmetry_loss/models/'
 if(inverse_problem):
     file_name = 'Model_'+str(Ne)+'atoms_'+H_name+'_'+res_name
 else:
@@ -142,4 +144,62 @@ scm.GraphData_history([[n_epochs, r.history['loss']],
               ['Train', 'Validation'],Title,file_graph, Axx='Epochs', Axy='Loss')
 
 ########## NEURAL NETWORK ##########
+######################################################
+
+
+######################################################
+########## PLOT PREDICTIONS ##########
+plot_predictions = False
+
+if(plot_predictions):
+    train = True #whether we plot training data or validation data
+    plot_separated_energies = True
+    plot_differences = True
+    if(train): #for the file's title
+        data_name = 'train'
+    else:
+        data_name = 'val'
+
+
+    #from which position of "y" we plot (depending on train or validation plotting)
+
+    if(train):
+        des_y=ytr
+        NN_y = model.predict(xtr)
+    else:
+        des_y=yva
+        NN_y = model.predict(xva)
+
+    if(plot_separated_energies):
+        for i in range(Ne):
+
+            filename_data='/Users/user/Desktop/HP_symmetry_loss/predictions/energy'+str(i+1)+'_'+H_name+'_'+str(Ne)+'atoms_'+data_name+'_'+res_name+'.png'
+            Title = H_name+', '+str(Ne)+' atoms'
+
+            y_QM = des_y[:,i]
+            y_NN = NN_y[:,i]
+
+            datalist = [[y_QM,y_NN]]
+            labellist = ['NN=QM','NN']
+            Axx = r'$\varepsilon_'+str(i+1)+'$ (QM)'
+            Axy = r'$\varepsilon_'+str(i+1)+'$ (NN)'
+
+            scm.GraphData_prediction(datalist, labellist, Title, filename_data, Axx, Axy)
+
+    if(plot_differences):
+        for i in range(Ne):
+            for j in range(i+1,Ne):
+                filename_data='/Users/user/Desktop/HP_symmetry_loss/predictions/energy'+str(i+1)+'-energy'+str(j+1)+'_'+H_name+'_'+str(Ne)+'atoms_'+data_name+'_'+res_name+'.png'
+                Title = H_name+', '+str(Ne)+' atoms'
+
+                y_QM = abs(des_y[:,i]-des_y[:,j])
+                y_NN = abs(NN_y[:,i]-NN_y[:,j])
+                datalist = [[y_QM,y_NN]]
+                labellist = ['NN=QM','NN']
+                Axx = r'$|\varepsilon_'+str(i+1)+r' - \varepsilon_'+str(j+1)+' |$ (QM)'
+                Axy = r'$|\varepsilon_'+str(i+1)+r' - \varepsilon_'+str(j+1)+' |$ (NN)'
+
+                scm.GraphData_prediction(datalist, labellist, Title, filename_data, Axx, Axy)
+
+########## PLOT PREDICTIONS ##########
 ######################################################

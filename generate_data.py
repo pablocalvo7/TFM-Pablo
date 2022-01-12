@@ -10,26 +10,26 @@ import subroutines as scm
 ######################################################
 ########## SET TYPE OF DATA ##########
 J=1 #Hopping
-Nsamples = 50000 #Number of samples for training/validation data ; GENERATE RANDOM
-nbins = 12 #GENERATE GRID
+Nsamples = 10000 #Number of samples for training/validation data ; GENERATE RANDOM
+nbins = 14 #GENERATE GRID
 delta = 1/nbins
 generate_random = True
 generate_grid = False
 Ne = 4 #Number of atoms
-rigid = True #Type of hamiltonian. True: rigid; False: periodic
+rigid = False #Type of hamiltonian. True: rigid; False: periodic
 if(rigid): #For the plot's title
     H_name = 'HR'
 else:
     H_name = 'HP'
 
-change_variables = True
+change_variables = False
 
 #Data restrictions
 invres = False #Inversion restriction (e_1<=e_N)
 cyclicres = False #Cyclic restriction
 inv_plus_cyc = False #save e_N > e_1, e_2, e_3, ... and e_1 < e_{N-1}
-invres_max_diff = True
-no_res = False
+invres_max_diff = False
+no_res = True
 #pentagon
 res_4 = False
 res_5 = False
@@ -159,16 +159,16 @@ if(generate_random):
         x.append(list_energies)
         y.append(autovals)
 
-if(generate_grid): #grid of data: Ne = 5 --> i,j,k,l,m (pentagon)
+if(generate_grid): #grid of data: Ne = 5 --> j,k,l,m (pentagon)
     number_of_data = 0
-    for i in range(nbins):
+    for i in range(1):
         for j in range(nbins):
             for k in range(nbins):
                 for l in range(nbins):
                     for m in range(nbins):
                         number_of_data = number_of_data + 1
                         print("grid position: ",i,j,k,l,m, "ndata: ",number_of_data)
-                        list_energies = [i*delta, j*delta, k*delta, l*delta, m*delta]
+                        list_energies = [j*delta,k*delta,l*delta, m*delta]
 
                         #Data restrictions
                         if(invres): #I save the permutation with the lower energy in 1st position
@@ -256,7 +256,7 @@ y = np.array(y) #EIGENVALUES NOT NORMALIZED
 dfx = pd.DataFrame(x)
 dfy = pd.DataFrame(y)
 
-directory = '/Users/user/Desktop/HR_abcd/'
+directory = '/Users/user/Desktop/HP_symmetry_loss/data/'
 
 if(generate_random):
     dfx.to_csv(directory+'ENERGIES_'+str(Ne)+'atoms_'+H_name+'_'+res_name+'.csv', sep = ',', header = False,index=False)
