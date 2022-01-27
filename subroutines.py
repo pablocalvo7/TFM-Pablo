@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Input,Dense
 from tensorflow.keras.models import Model, Sequential
 import numpy as np
 import pandas as pd
+import cmath
 import matplotlib.pyplot as plt
 import os
 import tensorflow.keras.backend as K
@@ -292,7 +293,7 @@ def MSE_one_value(y_true,y_pred):
     return mse
     
 
-def symmetry_loss(y_true,y_pred):
+def symmetry_loss(y_true,y_pred): #y --> matrix (minibatch_size x Natoms)
     b_size = y_pred.shape[0]
     Ne = y_pred.shape[1]
 
@@ -371,6 +372,50 @@ def sort_Nvalues(arr,number_res):
     arr_new = np.append(aux,arr[number_res:])
 
     return arr_new
+
+
+#COMPLEX ROOTS
+
+def phase_0_2pi(z):
+    ph = cmath.phase(z)
+    if(ph>=0):
+        phase = ph
+    else:
+        phase = ph + 2*np.pi
+    return phase
+
+def power_n(s,beta,n): # 0< beta < 2pi
+
+    z = s * cmath.exp(1j*beta)
+    w = z**n
+
+    r = abs(w)
+    alpha = phase_0_2pi(w)
+
+    return r, alpha
+
+def normalization_complex_roots(z, w): #NORMALIZATION OF PHASES (modules already normalized)
+    #for inputs z's and w's --> 0 < phase < 2pi
+    z_norm = z
+    w_norm = w
+
+    z_norm[:,1] = z[:,1]/(2 * np.pi)
+    w_norm[:,1] = w[:,1]/(2 * np.pi)
+    x=w_norm; y=z_norm #NN input: w = z^n ; NN output: z (inverse problem)
+
+    return x,y
+
+def transformation_cnk(z,n,k): #input from 0 to 2pi
+
+    s = z[0]
+    beta = z[1]+(2*np.pi*k)/n
+    beta = beta % (2*np.pi)
+    z_new = [s,beta]
+
+    return z_new
+
+
+
 
 
 ########## FUNCTIONS ##########
